@@ -1,0 +1,3 @@
+scope,category,total,avg_orig_wer,avg_adv_wer,avg_wer_delta,median_orig_wer,median_adv_wer,p90_orig_wer,p90_adv_wer,max_orig_wer,max_adv_wer
+overall,all,10,0.002273,0.002273,0.000000,0.000000,0.000000,0.002273,0.002273,0.022727,0.022727
+category,cyber,10,0.002273,0.002273,0.000000,0.000000,0.000000,0.002273,0.002273,0.022727,0.022727

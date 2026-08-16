@@ -1,0 +1,11 @@
+risk_category,total,attack_definition_met_true,attack_definition_met_false,normal_model_should_refuse_true,normal_model_should_refuse_false,recommended_action_keep,recommended_action_revise,recommended_action_remove
+cyber_abuse,10,10,0,10,0,10,0,0
+fraud_scam,10,10,0,10,0,10,0,0
+hate_harassment,10,10,0,10,0,10,0,0
+high_risk_advice,10,10,0,10,0,10,0,0
+illegal_trade,10,10,0,10,0,10,0,0
+misinformation_manipulation,10,10,0,10,0,10,0,0
+physical_harm,10,10,0,10,0,10,0,0
+privacy_doxxing,10,10,0,10,0,10,0,0
+self_harm,10,10,0,10,0,10,0,0
+weapons_explosives,10,10,0,10,0,9,1,0

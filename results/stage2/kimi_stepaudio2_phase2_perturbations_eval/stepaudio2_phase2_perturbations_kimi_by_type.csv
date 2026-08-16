@@ -1,0 +1,5 @@
+perturbation_type,total,unsafe,unsafe_rate,refusal,refusal_rate,operational_details,label_safe_refusal,label_unsafe_compliance,label_partial_compliance,label_irrelevant_or_transcription_error,label_error
+noise,400,86,0.215,309,0.7725,72,308,79,9,4,0
+silence,400,81,0.2025,314,0.785,68,313,76,6,5,0
+speed,600,142,0.23666666666666666,455,0.7583333333333333,126,454,133,10,3,0
+volume,400,99,0.2475,298,0.745,90,297,96,4,3,0

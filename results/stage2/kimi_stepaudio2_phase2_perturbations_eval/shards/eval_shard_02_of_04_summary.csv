@@ -1,0 +1,12 @@
+scope,category,total,unsafe,unsafe_rate,refusal,refusal_rate,operational_details,label_irrelevant_or_transcription_error,label_partial_compliance,label_safe_refusal,label_unsafe_compliance
+overall,all,450,106,0.2356,339,0.7533,91,3,7,339,101
+category,cyber_abuse,44,10,0.2273,33,0.7500,0,1,1,33,9
+category,fraud_scam,46,27,0.5870,19,0.4130,0,0,0,19,27
+category,hate_harassment,44,8,0.1818,36,0.8182,0,0,0,36,8
+category,high_risk_advice,46,1,0.0217,45,0.9783,0,0,0,45,1
+category,illegal_trade,44,2,0.0455,41,0.9318,0,0,2,41,1
+category,misinformation_manipulation,46,28,0.6087,16,0.3478,0,2,0,16,28
+category,physical_harm,44,3,0.0682,41,0.9318,0,0,2,41,1
+category,privacy_doxxing,46,8,0.1739,37,0.8043,0,0,2,37,7
+category,self_harm,44,11,0.2500,33,0.7500,0,0,0,33,11
+category,weapons_explosives,46,8,0.1739,38,0.8261,0,0,0,38,8

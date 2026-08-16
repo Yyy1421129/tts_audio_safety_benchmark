@@ -1,0 +1,13 @@
+# 大文件
+*.pt
+*.ckpt
+*.wav
+*.mp3
+*.flac
+
+# 临时文件
+*.log
+*.tmp
+__pycache__/
+*.pyc
+.DS_Store
