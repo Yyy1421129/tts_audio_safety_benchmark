@@ -5,6 +5,12 @@
 *.mp3
 *.flac
 
+# 密钥与本地凭据（勿提交）
+secrets/
+*.key
+.env
+.env.*
+
 # 临时文件
 *.log
 *.tmp
