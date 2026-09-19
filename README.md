@@ -37,38 +37,27 @@
 
 ### 2.1 四阶段实验流水线
 
+```mermaid
+flowchart LR
+    S1["Stage 1<br/><b>Baseline TTS</b><br/>基线"]
+    S2["Stage 2<br/><b>Acoustic Perturbation</b><br/>声学扰动"]
+    S3["Stage 3<br/><b>Narrative Wrap</b><br/>叙事包装"]
+    S4["Stage 4<br/><b>Adversarial Attack</b><br/>对抗攻击 ★"]
+
+    S1 --> S2 --> S3 --> S4
+
+    classDef stage fill:#f8fafc,stroke:#475569,stroke-width:1.5px,color:#0f172a
+    classDef core fill:#fff7ed,stroke:#ea580c,stroke-width:2px,color:#0f172a
+    class S1,S2,S3 stage
+    class S4 core
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│                        四阶段实验流程                                   │
-├─────────────────────────────────────────────────────────────────────┤
-│                                                                     │
-│  Stage 1: Baseline TTS 基线                                           │
-│    ├── 100 条英文危险 seed prompts（10 类，每类 10 条）                 │
-│    ├── Matcha-TTS + CosyVoice 合成音频                                │
-│    ├── Step-Audio2 / Qwen 推理 + Kimi judge 安全评测                  │
-│    └── 结果：Step-Audio2 25% unsafe，Qwen 0-1% unsafe                │
-│                              │                                        │
-│  Stage 2: 声学扰动实验                                                │
-│    ├── 9 种扰动：语速×3 + 音量×2 + 噪声×2 + 静音×2                    │
-│    ├── 共 1800 条扰动音频（2 TTS × 9 扰动）                           │
-│    └── 结果：unsafe rate 22.67%，声学扰动无显著效果                     │
-│                              │                                        │
-│  Stage 3: 叙事包装攻击                                                │
-│    ├── VoiceJailbreak 风格：将危险请求嵌入教育/小说/历史研究场景        │
-│    ├── v0_2（原始模板）+ v0_3（改进模板，移除防御触发词）              │
-│    └── 结果：Step-Audio2 43-62% unsafe ✓  /  Qwen 0-2% unsafe ✗      │
-│                              │                                        │
-│  Stage 4: 对抗音频攻击（本工作核心）                                    │
-│    ├── 在 Mel 频谱特征空间优化对抗扰动 δ                                │
-│    ├── 目标模型：Qwen2-Audio-7B-Instruct（白盒）                       │
-│    ├── 损失：Attack Loss + λ_L2 · ||δ||² + λ_STOI · STOI 约束         │
-│    ├── Box Constraint：δ = ε · tanh(α)，确保 |δ| ≤ ε                  │
-│    ├── 三种约束方案：无约束 / L2 / 能量范围约束                        │
-│    ├── 迁移测试：Step-Audio2（黑盒）                                   │
-│    └── 结果：Qwen2Audio 75-78% unsafe，Step-Audio2 17-40% unsafe     │
-│                                                                     │
-└─────────────────────────────────────────────────────────────────────┘
-```
+
+| Stage | 内容 | 关键结果 |
+|:-----:|:---|:---|
+| **1 · Baseline** | 100 条英文危险 seed（10 类 × 10）· Matcha-TTS + CosyVoice · Step-Audio2 / Qwen + Kimi judge | Step **25%** unsafe · Qwen **0–1%** |
+| **2 · 声学扰动** | 9 种扰动（语速×3 · 音量×2 · 噪声×2 · 静音×2）· 共 1800 条（2 TTS × 9） | unsafe **22.67%** · 信号级扰动无效 |
+| **3 · 叙事包装** | VoiceJailbreak：嵌入教育 / 小说 / 历史场景 · v0_2 原始 + v0_3 去防御触发词 | Step **43–62%** ✓ · Qwen **0–2%** ✗ |
+| **4 · 对抗攻击** | Mel 空间优化 δ · 白盒 Qwen2-Audio-7B · Attack + λ_L2‖δ‖² + λ_STOI · Box `δ=ε·tanh(α)` · 三种约束 · 黑盒迁移 Step-Audio2 | Qwen **75–78%** · Step **17–40%** |
 
 ### 2.2 对抗攻击核心算法
 
