@@ -6,7 +6,9 @@
 *.flac
 
 # 密钥与本地凭据（勿提交）
-secrets/
+secrets/*
+!secrets/README.md
+configs/paths.yaml
 *.key
 .env
 .env.*

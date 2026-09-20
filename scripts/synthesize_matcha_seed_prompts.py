@@ -21,7 +21,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_INPUT = PROJECT_ROOT / "data" / "seed_prompts_en_v0_1_kimi_labeled.jsonl"
 DEFAULT_OUTPUT_DIR = PROJECT_ROOT / "audio" / "matcha_seed_prompts_v0_1"
 DEFAULT_MANIFEST = PROJECT_ROOT / "manifests" / "matcha_seed_prompts_v0_1.jsonl"
-DEFAULT_MATCHA_ROOT = Path("/hpc_stor03/sjtu_home/yi.yang/Matcha-TTS")
+DEFAULT_MATCHA_ROOT = Path(os.environ.get("MATCHA_ROOT", "/opt/Matcha-TTS"))
 
 
 def read_jsonl(path):

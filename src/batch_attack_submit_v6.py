@@ -15,6 +15,16 @@ from transformers import (
 from audio_adversarial_attack_final2 import AudioAdversarialAttack
 import glob
 
+# Prefer configs/paths.py when available
+try:
+    _ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    if _ROOT not in sys.path:
+        sys.path.insert(0, _ROOT)
+    from configs.paths import get_path
+    _DEFAULT_MODEL = get_path("qwen2_audio_model")
+except Exception:
+    _DEFAULT_MODEL = os.environ.get("QWEN2_AUDIO_MODEL", "/models/Qwen2-Audio-7B-Instruct")
+
 
 def load_model(model_path):
     print(f"Loading model from {model_path} (FP16 mode, multi-gpu)...")
@@ -46,7 +56,7 @@ def main():
     parser.add_argument("--lr", type=float, default=1e-2, help="Learning rate")
     parser.add_argument("--num-steps", type=int, default=200, help="Number of optimization steps")
     parser.add_argument("--output-dir", required=True, help="Output directory")
-    parser.add_argument("--model-path", default="/workspace/model", help="Model path")
+    parser.add_argument("--model-path", default=_DEFAULT_MODEL, help="Model path (or set QWEN2_AUDIO_MODEL)")
     parser.add_argument("--limit", type=int, default=None, help="Limit number of audio files")
     parser.add_argument("--lambda-l2", type=float, default=0.0, help="Weight for L2 distance loss")
     parser.add_argument("--lambda-stoi", type=float, default=0.0, help="Weight for STOI perceptual loss (0 to disable)")

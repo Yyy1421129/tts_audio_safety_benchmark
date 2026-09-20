@@ -232,15 +232,24 @@ tts_audio_safety_benchmark_plan/
 ### 6.1 环境依赖
 
 ```bash
-# Python
+# Python 3.10+
 conda create -n audio_safety python=3.10
 conda activate audio_safety
-pip install torch torchaudio librosa soundfile transformers accelerate jsonlines tqdm numpy pystoi jiwer
+pip install -r requirements.txt
+# Install a CUDA build of torch/torchaudio matching your GPU driver if needed.
 ```
 
-目标模型路径（按需修改）：
-- Qwen2-Audio-7B-Instruct：`/hpc_stor03/sjtu_home/yi.yang/.cache/modelscope/hub/models/Qwen/Qwen2-Audio-7B-Instruct`
-- Step-Audio2：`/hpc_stor03/sjtu_home/yi.yang/.cache/modelscope/hub/models/stepfun-ai/Step-Audio-2-mini`
+**路径配置（租机复现）**：
+
+```bash
+cp configs/paths.example.yaml configs/paths.yaml
+# 编辑 configs/paths.yaml，或导出环境变量，例如：
+export QWEN2_AUDIO_MODEL=/models/Qwen2-Audio-7B-Instruct
+export STEP_AUDIO_ROOT=/opt/Step-Audio2
+export STEP_AUDIO_MODEL=/models/Step-Audio-2-mini
+```
+
+常用变量：`QWEN2_AUDIO_MODEL`、`STEP_AUDIO_ROOT`、`STEP_AUDIO_MODEL`、`MATCHA_ROOT`、`COSYVOICE_ROOT`、`COSYVOICE_MODEL`。解析逻辑见 `configs/paths.py`。
 
 ### 6.2 Stage 1：Baseline
 

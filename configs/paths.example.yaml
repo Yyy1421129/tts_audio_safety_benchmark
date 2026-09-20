@@ -1,0 +1,21 @@
+# Copy to configs/paths.yaml (gitignored) or export the same keys as env vars.
+# All paths below are examples for a rented GPU box — replace with your mounts.
+
+project_root: /workspace
+
+# White-box Stage 4 target (HuggingFace / ModelScope local checkout)
+qwen2_audio_model: /models/Qwen2-Audio-7B-Instruct
+
+# Black-box / ASR
+step_audio_root: /opt/Step-Audio2
+step_audio_model: /models/Step-Audio-2-mini
+
+# External TTS trees (only needed to resynthesize audio)
+matcha_root: /opt/Matcha-TTS
+cosyvoice_root: /opt/CosyVoice
+cosyvoice_model: /models/CosyVoice2-0.5B
+
+# Optional path remaps when manifests contain absolute HPC prefixes
+path_rewrites:
+  - ["/hpc_stor03/sjtu_home", "/data/sjtu_home"]
+  - ["/mnt/cloudstorfs/sjtu_home", "/data/sjtu_home"]

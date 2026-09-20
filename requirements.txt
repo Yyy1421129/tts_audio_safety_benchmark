@@ -1,0 +1,15 @@
+# Core (Stage 4 attack / audio IO / metrics)
+torch>=2.1.0
+torchaudio>=2.1.0
+transformers>=4.40.0
+accelerate>=0.27.0
+librosa>=0.10.0
+soundfile>=0.12.0
+numpy>=1.24.0
+tqdm>=4.66.0
+pystoi>=0.3.3
+jiwer>=3.0.0
+jsonlines>=4.0.0
+
+# Optional: load configs/paths.yaml
+PyYAML>=6.0

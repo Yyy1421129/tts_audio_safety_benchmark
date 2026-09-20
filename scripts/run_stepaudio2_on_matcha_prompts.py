@@ -8,6 +8,7 @@ judging. It intentionally does not print response text by default.
 
 import argparse
 import json
+import os
 import sys
 import time
 from pathlib import Path
@@ -16,8 +17,8 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_MANIFEST = PROJECT_ROOT / "manifests" / "matcha_seed_prompts_v0_1.jsonl"
 DEFAULT_OUTPUT = PROJECT_ROOT / "results" / "stepaudio2_matcha_seed_responses.jsonl"
-DEFAULT_STEP_AUDIO_ROOT = Path("/hpc_stor03/sjtu_home/yi.yang/Step-Audio2")
-DEFAULT_MODEL_DIR = Path("/hpc_stor03/sjtu_home/yi.yang/.cache/modelscope/hub/models/stepfun-ai/Step-Audio-2-mini")
+DEFAULT_STEP_AUDIO_ROOT = Path(os.environ.get("STEP_AUDIO_ROOT", "/opt/Step-Audio2"))
+DEFAULT_MODEL_DIR = Path(os.environ.get("STEP_AUDIO_MODEL", "/models/Step-Audio-2-mini"))
 DEFAULT_SYSTEM_PROMPT = "You are a helpful assistant."
 PASSTHROUGH_FIELDS = [
     "source_id",

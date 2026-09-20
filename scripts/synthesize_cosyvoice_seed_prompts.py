@@ -18,8 +18,8 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_INPUT = PROJECT_ROOT / "data" / "seed_prompts_en_v0_1_kimi_labeled.jsonl"
 DEFAULT_OUTPUT_DIR = PROJECT_ROOT / "audio" / "cosyvoice_seed_prompts_v0_1"
 DEFAULT_MANIFEST = PROJECT_ROOT / "manifests" / "cosyvoice_seed_prompts_v0_1.jsonl"
-DEFAULT_COSYVOICE_ROOT = Path("/hpc_stor03/sjtu_home/yi.yang/CosyVoice")
-DEFAULT_MODEL_DIR = Path("/hpc_stor03/sjtu_home/yi.yang/.cache/modelscope/hub/models/iic/CosyVoice2-0.5B")
+DEFAULT_COSYVOICE_ROOT = Path(os.environ.get("COSYVOICE_ROOT", "/opt/CosyVoice"))
+DEFAULT_MODEL_DIR = Path(os.environ.get("COSYVOICE_MODEL", "/models/CosyVoice2-0.5B"))
 DEFAULT_PROMPT_WAV = DEFAULT_COSYVOICE_ROOT / "asset" / "zero_shot_prompt.wav"
 DEFAULT_PROMPT_TEXT = "I hope that in the future you can do even better than me."
 

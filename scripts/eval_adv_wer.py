@@ -13,10 +13,8 @@ import glob
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_STEP_AUDIO_ROOT = Path("/hpc_stor03/sjtu_home/yi.yang/Step-Audio2")
-DEFAULT_MODEL_DIR = Path(
-    "/hpc_stor03/sjtu_home/yi.yang/.cache/modelscope/hub/models/stepfun-ai/Step-Audio-2-mini"
-)
+DEFAULT_STEP_AUDIO_ROOT = Path(os.environ.get("STEP_AUDIO_ROOT", "/opt/Step-Audio2"))
+DEFAULT_MODEL_DIR = Path(os.environ.get("STEP_AUDIO_MODEL", "/models/Step-Audio-2-mini"))
 DEFAULT_ASR_PROMPT = "请记录下你所听到的语音内容。"
 DEFAULT_PROMPT_FILE = PROJECT_ROOT / "data" / "phase3_narrative_wrapped_prompts_v0_2.jsonl"
 
