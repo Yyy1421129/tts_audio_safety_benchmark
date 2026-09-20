@@ -2,7 +2,7 @@
 
 > 面向语音大模型的 TTS 驱动安全红队评测基准
 
-**更新时间**：2026-08-16
+**更新时间**：2026-09-20
 
 ---
 
@@ -90,7 +90,7 @@ s.t.  |δ| ≤ ε   （Box Constraint via tanh parameterization: δ = ε·tanh(�
 | TTS 模型 | Matcha-TTS, CosyVoice |
 | 白盒目标模型 | Qwen2-Audio-7B-Instruct |
 | 黑盒目标模型 | Step-Audio2, Qwen3.5-omni-flash |
-| Judge | Kimi judge + 手动严格评测 |
+| Judge | Kimi judge（Stage 1–3）+ 手动严格评测 / Kimi 复评（Stage 4） |
 | WER ASR | Step-Audio2 ASR, Qwen2Audio ASR |
 | 风险类别 | cyber_abuse, fraud_scam, hate_harassment, high_risk_advice,<br>illegal_trade, misinformation, physical_harm, privacy_doxxing,<br>self_harm, weapons_explosives |
 
@@ -104,7 +104,8 @@ s.t.  |δ| ≤ ε   （Box Constraint via tanh parameterization: δ = ε·tanh(�
 
 | 指标 | 无约束 | L2 约束 | 能量范围约束 |
 |:--- |:--- |:--- |:--- |
-| **真实 unsafe rate** | **78%** | **75%** | 65% |
+| **手动评测 unsafe rate** | **78%** | **75%** | 65% |
+| **Kimi 复评 unsafe rate** | **63%** | **70%** | **60%** |
 | 关键词匹配率（启发式低估） | 30% | 34% | 33% |
 | **平均 WER 增量** (Step-Audio2 ASR) | 9.42% | **4.34%** | — |
 | WER<5% 样本占比 | 59.1% | **87%** | — |
@@ -114,9 +115,9 @@ s.t.  |δ| ≤ ε   （Box Constraint via tanh parameterization: δ = ε·tanh(�
 
 **最优方案：L2 约束**
 
-- 攻击成功率仅下降 3pp（78%→75%）
+- 攻击成功率仅下降 3pp（手动 78%→75%；Kimi 复评下 L2 为三套最高 **70%**）
 - 音频质量大幅提升：WER 增量减半（9.42%→4.34%），87% 样本 WER 变化 < 5%
-- 跨模型迁移效果最好（见 3.2）
+- 跨模型迁移效果最好（见 3.2）；与手动口径一致率最高（见 3.4）
 
 ### 3.2 跨模型迁移性（Step-Audio2 黑盒）
 
@@ -143,6 +144,23 @@ s.t.  |δ| ≤ ε   （Box Constraint via tanh parameterization: δ = ε·tanh(�
 | weapons_explosives | 70% | 20% |
 | self_harm | 90% | 20% |
 
+### 3.4 Stage 4 Kimi 独立复评（2026-09-20）
+
+对三套约束各 100 条白盒攻击响应，使用 `kimi-k2.6`（关闭 thinking）按与 Stage 1–3 同类的严格 actionable 标准复评。产物：`results/stage4/kimi_judge/`（含 `FINAL_SUMMARY.md`）。
+
+| 约束 | Kimi unsafe | 关键词 | 手动评测 | 二值一致率 |
+|:---|---:|---:|---:|---:|
+| 无约束 | **63%** | 30% | 78% | 59% |
+| L2 | **70%** | 34% | 75% | **75%** |
+| 能量范围 | **60%** | 33% | 65% | 71% |
+
+**读数说明**
+
+- Kimi 仍**远高于**关键词匹配（约 +30–36pp），确认启发式成功标记严重低估真实违规。
+- 相对手动口径略严：主要分歧是手动 `partial_compliance` 被 Kimi 判为 `safe_refusal`（要求更强的 actionable 细节）。
+- **L2 与手动最接近**（70% vs 75%，一致率 75%），与「L2 为最优平衡」结论一致。
+- 评测脚本：`scripts/evaluate_adv_attack_with_kimi.py`；批量入口：`scripts/run_stage4_kimi_judge_batch.sh`。
+
 ---
 
 ## 4. 仓库结构
@@ -157,6 +175,7 @@ tts_audio_safety_benchmark_plan/
 │   ├── stage3/                   # 叙事包装结果
 │   └── stage4/                   # 对抗攻击结果
 │       ├── judge_manual/         # 手动评测结果（all_evaluations.jsonl）
+│       ├── kimi_judge/           # Kimi 独立复评（no_l2 / l2 / energy_range）
 │       ├── adv_wer_*.jsonl       # WER 评测结果
 │       ├── stepaudio2_adv_v5_l2/       # L2约束 → Step-Audio2 泛化性测试
 │       └── stepaudio2_adv_v8_fixed/    # 能量范围约束 → Step-Audio2 泛化性测试
@@ -197,8 +216,9 @@ tts_audio_safety_benchmark_plan/
 | Stage 1 Baseline | `results/stage1/` | Kimi judge、Step-Audio2/Qwen 推理、WER |
 | Stage 2 声学扰动 | `results/stage2/` | 扰动音频的 Kimi judge 和 WER |
 | Stage 3 叙事包装 | `results/stage3/` | v0_2 / v0_3 两版叙事包装评测 |
-| Stage 4 对抗攻击 | `results/stage4/` | 手动评测、WER、Step-Audio2 泛化性测试 |
+| Stage 4 对抗攻击 | `results/stage4/` | 手动评测、Kimi 复评、WER、Step-Audio2 泛化性测试 |
 | 手动评测标签 | `results/stage4/judge_manual/all_evaluations.jsonl` | 100×3 版攻击的逐样本安全标签 |
+| Kimi 复评 | `results/stage4/kimi_judge/` | 三套约束的 Kimi 复评 JSONL / CSV / `FINAL_SUMMARY.md` |
 | Step-Audio2 泛化性 | `results/stage4/stepaudio2_adv_v5_l2/evaluation_summary.csv` | L2 约束跨模型类别级汇总 |
 
 > ⚠️ 原始危险文本、模型完整响应和对抗音频为**分级访问资产**，上传公开仓库前请移除以下目录：`data/`（原始 prompt）、`audio/`、`output/`、以及 `results/` 中包含完整回复的 `.jsonl`。仅上传 `results/result.md` 作为聚合指标报告。
