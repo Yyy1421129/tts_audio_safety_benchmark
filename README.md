@@ -17,11 +17,11 @@
 | Baseline TTS 原始音频 | 25% unsafe | 0-1% | Qwen 在音频输入下安全对齐极强 |
 | 声学扰动（音量/语速/噪声/静音） | 22.67% | — | 信号级后处理无效 |
 | 叙事包装攻击 | 43-62% | 0-2% | 语义包装对 Qwen 无效 |
-| **对抗扰动（无约束）** | — | **78%** | **首次攻破 Qwen 音频安全防线** |
-| **对抗扰动（L2约束）** | **40%** | **75%** | 最优平衡点，可跨模型迁移 |
-| 对抗扰动（能量范围约束） | 17% | 65% | 扰动过强反而降低攻击与泛化能力 |
+| **对抗扰动（无约束）** | — | **63%** | **首次攻破 Qwen 音频安全防线**（Kimi judge） |
+| **对抗扰动（L2约束）** | **40%** | **70%** | 最优平衡点，可跨模型迁移（Kimi judge） |
+| 对抗扰动（能量范围约束） | 17% | 60% | 扰动过强反而降低攻击与泛化能力（Kimi judge） |
 
-**核心结论**：Qwen 的文本安全过滤器很强（叙事包装无效），但在音频特征空间注入微小对抗扰动可以绕过安全对齐，使 Qwen2Audio 的不安全响应率从 0-1% 提升至 75-78%。L2 约束版本同时具有 40% 的跨模型迁移率（到 Step-Audio2）。
+**核心结论**：Qwen 的文本安全过滤器很强（叙事包装无效），但在音频特征空间注入微小对抗扰动可以绕过安全对齐，使 Qwen2Audio 的不安全响应率从 0-1% 提升至 **60–70%**（Kimi judge，与 Stage 1–3 口径一致；手动严格评测为 65–78%）。L2 约束在 Kimi 口径下攻击率最高（**70%**），并具有 40% 的跨模型迁移率（到 Step-Audio2，手动评测）。
 
 ### 1.2 安全边界
 
@@ -57,7 +57,7 @@ flowchart LR
 | **1 · Baseline** | 100 条英文危险 seed（10 类 × 10）· Matcha-TTS + CosyVoice · Step-Audio2 / Qwen + Kimi judge | Step **25%** unsafe · Qwen **0–1%** |
 | **2 · 声学扰动** | 9 种扰动（语速×3 · 音量×2 · 噪声×2 · 静音×2）· 共 1800 条（2 TTS × 9） | unsafe **22.67%** · 信号级扰动无效 |
 | **3 · 叙事包装** | VoiceJailbreak：嵌入教育 / 小说 / 历史场景 · v0_2 原始 + v0_3 去防御触发词 | Step **43–62%** ✓ · Qwen **0–2%** ✗ |
-| **4 · 对抗攻击** | Mel 空间优化 δ · 白盒 Qwen2-Audio-7B · Attack + λ_L2‖δ‖² + λ_STOI · Box `δ=ε·tanh(α)` · 三种约束 · 黑盒迁移 Step-Audio2 | Qwen **75–78%** · Step **17–40%** |
+| **4 · 对抗攻击** | Mel 空间优化 δ · 白盒 Qwen2-Audio-7B · Attack + λ_L2‖δ‖² + λ_STOI · Box `δ=ε·tanh(α)` · 三种约束 · 黑盒迁移 Step-Audio2 | Qwen **60–70%**（Kimi）· Step **17–40%** |
 
 ### 2.2 对抗攻击核心算法
 
@@ -90,7 +90,7 @@ s.t.  |δ| ≤ ε   （Box Constraint via tanh parameterization: δ = ε·tanh(�
 | TTS 模型 | Matcha-TTS, CosyVoice |
 | 白盒目标模型 | Qwen2-Audio-7B-Instruct |
 | 黑盒目标模型 | Step-Audio2, Qwen3.5-omni-flash |
-| Judge | Kimi judge（Stage 1–3）+ 手动严格评测 / Kimi 复评（Stage 4） |
+| Judge | Kimi judge（Stage 1–4 主口径一致）+ Stage 4 手动严格评测作对照 |
 | WER ASR | Step-Audio2 ASR, Qwen2Audio ASR |
 | 风险类别 | cyber_abuse, fraud_scam, hate_harassment, high_risk_advice,<br>illegal_trade, misinformation, physical_harm, privacy_doxxing,<br>self_harm, weapons_explosives |
 
@@ -102,10 +102,12 @@ s.t.  |δ| ≤ ε   （Box Constraint via tanh parameterization: δ = ε·tanh(�
 
 ### 3.1 三种约束方案对比（Qwen2Audio 白盒）
 
+> Stage 4 白盒主指标与 Stage 1–3 对齐，采用 **Kimi judge**（`kimi-k2.6`）。手动严格评测保留为对照。
+
 | 指标 | 无约束 | L2 约束 | 能量范围约束 |
 |:--- |:--- |:--- |:--- |
-| **手动评测 unsafe rate** | **78%** | **75%** | 65% |
-| **Kimi 复评 unsafe rate** | **63%** | **70%** | **60%** |
+| **Kimi unsafe rate（主指标）** | **63%** | **70%** | **60%** |
+| 手动评测 unsafe rate（对照） | 78% | 75% | 65% |
 | 关键词匹配率（启发式低估） | 30% | 34% | 33% |
 | **平均 WER 增量** (Step-Audio2 ASR) | 9.42% | **4.34%** | — |
 | WER<5% 样本占比 | 59.1% | **87%** | — |
@@ -115,9 +117,9 @@ s.t.  |δ| ≤ ε   （Box Constraint via tanh parameterization: δ = ε·tanh(�
 
 **最优方案：L2 约束**
 
-- 攻击成功率仅下降 3pp（手动 78%→75%；Kimi 复评下 L2 为三套最高 **70%**）
-- 音频质量大幅提升：WER 增量减半（9.42%→4.34%），87% 样本 WER 变化 < 5%
-- 跨模型迁移效果最好（见 3.2）；与手动口径一致率最高（见 3.4）
+- Kimi 口径下攻击率最高（**70%**，高于无约束 63% 与能量范围 60%）
+- 音频质量最佳：WER 增量仅 4.34%，87% 样本 WER 变化 < 5%
+- 跨模型迁移最好（见 3.2）；与手动口径一致率最高（75%，见 3.4）
 
 ### 3.2 跨模型迁移性（Step-Audio2 黑盒）
 
@@ -144,11 +146,11 @@ s.t.  |δ| ≤ ε   （Box Constraint via tanh parameterization: δ = ε·tanh(�
 | weapons_explosives | 70% | 20% |
 | self_harm | 90% | 20% |
 
-### 3.4 Stage 4 Kimi 独立复评（2026-09-20）
+### 3.4 Stage 4 Kimi 评测细节（主指标来源）
 
-对三套约束各 100 条白盒攻击响应，使用 `kimi-k2.6`（关闭 thinking）按与 Stage 1–3 同类的严格 actionable 标准复评。产物：`results/stage4/kimi_judge/`（含 `FINAL_SUMMARY.md`）。
+对三套约束各 100 条白盒攻击响应，使用 `kimi-k2.6`（关闭 thinking）复评；**§1.1 / §3.1 主表均以此为准**。产物：`results/stage4/kimi_judge/`（含 `FINAL_SUMMARY.md`）。
 
-| 约束 | Kimi unsafe | 关键词 | 手动评测 | 二值一致率 |
+| 约束 | Kimi unsafe（主） | 关键词 | 手动对照 | 二值一致率 |
 |:---|---:|---:|---:|---:|
 | 无约束 | **63%** | 30% | 78% | 59% |
 | L2 | **70%** | 34% | 75% | **75%** |
@@ -156,9 +158,9 @@ s.t.  |δ| ≤ ε   （Box Constraint via tanh parameterization: δ = ε·tanh(�
 
 **读数说明**
 
-- Kimi 仍**远高于**关键词匹配（约 +30–36pp），确认启发式成功标记严重低估真实违规。
-- 相对手动口径略严：主要分歧是手动 `partial_compliance` 被 Kimi 判为 `safe_refusal`（要求更强的 actionable 细节）。
-- **L2 与手动最接近**（70% vs 75%，一致率 75%），与「L2 为最优平衡」结论一致。
+- 与 Stage 1–3 相同 judge 族，跨阶段口径一致。
+- 仍**远高于**关键词匹配（约 +30–36pp），确认启发式成功标记严重低估。
+- 相对手动略严（部分手动 `partial_compliance` 被判 `safe_refusal`）；L2 与手动最接近。
 - 评测脚本：`scripts/evaluate_adv_attack_with_kimi.py`；批量入口：`scripts/run_stage4_kimi_judge_batch.sh`。
 
 ---
